@@ -1,93 +1,44 @@
-<!doctype html>
-<html lang="pt-br">
+{% extends "base.html" %}
+{% block title %}Catálogo{% endblock %}
+{% block heading %}Catálogo{% endblock %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Catálogo | Produtos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
-</head>
+{% block content %}
+<form class="controls" method="get" action="{{ url_for('catalog') }}">
+    <input type="text" name="q" placeholder="Digite um produto..." value="{{ q }}">
+    <select name="metodo" aria-label="Método de busca">
+        <option value="linear" {% if metodo == 'linear' %}selected{% endif %}>Linear (contém)</option>
+        <option value="binaria" {% if metodo == 'binaria' %}selected{% endif %}>Binária (começa com)</option>
+    </select>
+    <select name="ordenacao" aria-label="Ordenação">
+        <option value="price_asc" {% if ordenacao == 'price_asc' %}selected{% endif %}>Preço ↑</option>
+        <option value="price_desc" {% if ordenacao == 'price_desc' %}selected{% endif %}>Preço ↓</option>
+        <option value="name_asc" {% if ordenacao == 'name_asc' %}selected{% endif %}>Nome A→Z</option>
+        <option value="name_desc" {% if ordenacao == 'name_desc' %}selected{% endif %}>Nome Z→A</option>
+    </select>
+    <button class="btn-primary" type="submit">Aplicar</button>
+</form>
 
-<body class="shop-body">
-    <header class="topbar">
-        <div class="brand-wrap">
-            <div class="brand-mark">F</div>
-            <div>
-                <p class="brand-eyebrow">Framework</p>
-                <h1 class="title">Catálogo</h1>
-            </div>
+<p class="hint">
+    Resultados: <strong>{{ total }}</strong>
+    {% if q %} • termo: <em>"{{ q }}"</em>{% endif %}
+</p>
+
+<section class="catalog-section" aria-label="Lista de produtos">
+    <div class="section-head">
+        <div>
+            <span class="eyebrow alt">Produtos</span>
+            <h3>Lista de itens</h3>
         </div>
+    </div>
 
-        <nav class="nav" aria-label="Navegação principal">
-            <a href="{{ url_for('catalog_bp.products') }}" class="nav-btn active">Catálogo</a>
-            <a href="{{ url_for('cart_bp.cart') }}" class="nav-btn">Carrinho</a>
-            <a href="{{ url_for('checkout_bp.checkout_page') }}" class="nav-btn">Checkout</a>
-            <a href="{{ url_for('order_bp.orders') }}" class="nav-btn">Pedidos</a>
-        </nav>
-    </header>
-
-    <main class="page-shell">
-        <form class="controls" method="get" action="{{ url_for('catalog_bp.products') }}">
-            <input type="text" name="q" placeholder="Digite um produto..." value="{{ q }}">
-            <select name="metodo" aria-label="Método de busca">
-                <option value="linear" {% if metodo=='linear' %}selected{% endif %}>Linear</option>
-                <option value="binaria" {% if metodo=='binaria' %}selected{% endif %}>Binária</option>
-            </select>
-            <select name="ordenacao" aria-label="Ordenação">
-                <option value="price_asc" {% if ordenacao=='price_asc' %}selected{% endif %}>Preço ↑</option>
-                <option value="price_desc" {% if ordenacao=='price_desc' %}selected{% endif %}>Preço ↓</option>
-                <option value="name_asc" {% if ordenacao=='name_asc' %}selected{% endif %}>Nome A→Z</option>
-                <option value="name_desc" {% if ordenacao=='name_desc' %}selected{% endif %}>Nome Z→A</option>
-            </select>
-            <button class="btn-primary" type="submit">Aplicar</button>
-        </form>
-
-        <p class="hint">
-            Resultados: <strong>{{ total }}</strong>
-            {% if q %} • termo: <em>"{{ q }}"</em>{% endif %}
-        </p>
-
-        <section class="catalog-section" aria-label="Lista de produtos">
-            <div class="section-head">
-                <div>
-                    <span class="eyebrow alt">Produtos</span>
-                    <h3>Lista de itens</h3>
-                </div>
-                <a href="{{ url_for('home_bp.home') }}" class="btn-back">Voltar</a>
-            </div>
-
-            <div class="grid">
-                {% if produtos %}
-                {% for p in produtos %}
-                <article class="card">
-                    <img class="album-cover" src="{{ url_for('static', filename=p.img if p.img else 'img/placeholder.jpg') }}" alt="{{ p.name }}">
-                    <div class="card-body">
-                        <a href="{{ url_for('catalog_bp.product_page', product_name=p.name) }}" class="product-name-link" aria-label="{{ p.name }}">
-                            <h3>{{ p.name }}</h3>
-                        </a>
-                        <p class="description">{{ p.description }}</p>
-                        <div class="card-footer">
-                            <p class="price">R$ {{ "%.2f"|format(p.price or 0) }}</p>
-                            <form action="{{ url_for('cart_bp.add_to_cart') }}" method="post" class="mini-form">
-                                <input type="hidden" name="product_name" value="{{ p.name }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="cart-btn">Adicionar</button>
-                            </form>
-                        </div>
-                    </div>
-                </article>
-                {% endfor %}
-                {% else %}
-                <p class="empty">Nada encontrado. Tente o nome completo ou troque o método de busca.</p>
-                {% endif %}
-            </div>
-        </section>
-    </main>
-
-    <footer class="foot">
-        <small>Linear/Binária = busca exata • Bubble Sort para ordenação</small>
-    </footer>
-</body>
-
-</html>
+    {% if produtos %}
+    <div class="grid">
+        {% for p in produtos %}
+            {% include "_product_card.html" %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">Nada encontrado. Tente outro termo ou troque o método de busca.</p>
+    {% endif %}
+</section>
+{% endblock %}

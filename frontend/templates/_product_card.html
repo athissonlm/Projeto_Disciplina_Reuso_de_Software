@@ -1,0 +1,19 @@
+<article class="card">
+    <img src="{{ url_for('static', filename=p.image or 'img/placeholder.svg') }}"
+         alt="{{ p.name }}"
+         onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/placeholder.svg') }}'">
+    <div class="card-body">
+        <a href="{{ url_for('product_page', product_id=p.id) }}" class="product-name-link" aria-label="{{ p.name }}">
+            <h3>{{ p.name }}</h3>
+        </a>
+        <p class="description">{{ p.description }}</p>
+        <div class="card-footer">
+            <span class="price">R$ {{ '%.2f'|format(p.price or 0) }}</span>
+            <form action="{{ url_for('add_to_cart') }}" method="post" class="mini-form">
+                <input type="hidden" name="product_id" value="{{ p.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="cart-btn">Adicionar</button>
+            </form>
+        </div>
+    </div>
+</article>

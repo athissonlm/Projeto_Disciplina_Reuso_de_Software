@@ -1,114 +1,311 @@
 # Framework para Sistemas de E-commerce
+### Microsserviços + Componentes de Software Reutilizáveis
 
-## 1. Introdução
-Este projeto foi desenvolvido como uma proposta acadêmica de framework para sistemas de e-commerce, com foco em reutilização de software, organização modular e arquitetura baseada em microservices lógicos. O objetivo principal é demonstrar como um sistema de comércio eletrônico pode ser estruturado em camadas bem definidas, separando responsabilidades e promovendo componentes reutilizáveis.
+Projeto acadêmico (disciplina de Reuso de Software) que mostra, de forma **didática e simples**, como organizar um e-commerce em **microsserviços** e **componentes reutilizáveis**.
 
-## 2. Objetivo
-O sistema tem como finalidade apresentar um catálogo de produtos, permitir busca e ordenação de itens, além de demonstrar a estrutura de um framework orientado a e-commerce. A arquitetura foi organizada para facilitar a manutenção, a extensão e a compreensão do projeto em contexto acadêmico.
+---
 
-## 3. Arquitetura do sistema
-A solução foi pensada como um monólito modular, mas com visão de microservices lógicos. Isso significa que o sistema ainda roda em uma única aplicação, porém com responsabilidades separadas por domínio.
+## 1. Ideia central
 
-### 3.1 Camadas do projeto
-- Camada de apresentação: responsável pelas páginas HTML e rotas visíveis ao usuário.
-- Camada de serviços: contém a lógica de negócio, como catálogo e pedidos.
-- Camada de repositórios: acessa e manipula os dados dos produtos.
-- Camada de componentes reutilizáveis: reúne algoritmos compartilhados, como busca e ordenação.
+O projeto separa duas coisas que costumam ficar misturadas:
 
-## 4. Microservices lógicos
-O projeto foi organizado para representar os principais domínios de um e-commerce:
+| Conceito | O que é neste projeto | Onde fica |
+|---|---|---|
+| **Microsserviço** | Um mini-sistema independente: roda em seu próprio processo e porta, tem sua API REST e seus próprios dados. Resolve **um** problema de negócio. | `services/` |
+| **Componente de software** | Uma peça pequena e reutilizável (busca, ordenação, banco, validação...). **Não conhece** nenhum serviço específico, então vários serviços podem usá-la. | `components/` |
 
-### 4.1 Catalog Service
-Responsável pela listagem, busca e filtro de produtos.
+> Em resumo: **serviços** respondem *"o que o negócio faz"* (catálogo, carrinho, pedido, pagamento); **componentes** respondem *"com o que os serviços são construídos"* (as peças que se repetem).
 
-### 4.2 Order Service
-Responsável pela criação de pedidos, cálculo do total e acompanhamento do status.
+---
 
-### 4.3 Cart Service
-Representa a lógica de carrinho, incluindo itens e quantidades.
-
-### 4.4 Payment Service
-Representa a etapa de checkout e pagamento.
-
-Esses serviços são implementados como módulos lógicos dentro do sistema, o que atende ao objetivo didático sem exigir escalabilidade real no momento.
-
-## 5. Componentes de software reutilizáveis
-Entre os principais componentes reutilizáveis presentes no projeto, destacam-se:
-
-- busca linear
-- busca binária
-- ordenação por bolha
-- serviços de catálogo
-- serviços de pedidos
-
-Esses elementos podem ser reaproveitados em outras partes do sistema sem duplicação de código.
-
-## 6. Estrutura do projeto
+## 2. Arquitetura
 
 ```text
-E-Commerce - Reuso de Software/
-├── app/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── factory.py
-│   ├── routes/
-│   │   ├── __init__.py
-│   │   ├── home.py
-│   │   ├── products.py
-│   │   └── orders.py
-│   ├── services/
-│   │   ├── __init__.py
-│   │   ├── catalog_service.py
-│   │   └── order_service.py
-│   └── repositories/
-│       ├── __init__.py
-│       └── product_repository.py
-├── shared/
-│   ├── __init__.py
-│   └── utils/
-│       ├── __init__.py
-│       └── search.py
-├── static/
-│   ├── produtos.json
-│   ├── style.css
-│   └── img_prod/
-├── templates/
-│   ├── homepage.html
-│   ├── crafts.html
-│   └── productpage.html
-├── tests/
-│   └── test_routes.py
-├── main.py
-├── models.py
-├── views.py
-├── requirements.txt
-├── readme.md
-└── .gitignore
+                         ┌──────────────────────────┐
+                         │   Frontend  (porta 5000)  │   páginas HTML (Flask + Jinja)
+                         └─────────────┬────────────┘
+                                       │ HTTP
+        ┌──────────────────────────────┼───────────────────────────┐
+        ▼                              ▼                           ▼
+┌────────────────┐            ┌────────────────┐           ┌────────────────┐
+│ Catalog Service│◄───────────│  Cart Service  │           │  Order Service │
+│  porta 5001    │   HTTP     │   porta 5002   │◄──────────│   porta 5003   │
+│  products      │            │   cart_items   │   HTTP    │ orders         │
+└────────────────┘            └────────────────┘           │ order_items    │
+                                                           └───────┬────────┘
+                                                                   │ HTTP
+                                                           ┌───────▼────────┐
+                                                           │Payment Service │
+                                                           │  porta 5004    │
+                                                           │  payments      │
+                                                           └────────────────┘
+
+        ┌────────────────────────────────────────────────────────────┐
+        │  components/  (usados por TODOS os serviços acima)          │
+        │  errors · validation · sorting · search · pricing ·         │
+        │  database · http_client · service_app                       │
+        └────────────────────────────────────────────────────────────┘
+
+                        database/ecommerce.db  (SQLite)
 ```
 
-## 7. Tecnologias utilizadas
-- Python
-- Flask
-- Jinja2
-- Estrutura modular em pacotes
-- JSON para armazenamento local de catálogo
+Regras da arquitetura:
 
-## 8. Execução do projeto
-Para rodar a aplicação localmente, execute os seguintes passos:
+1. **Cada serviço tem seu processo e sua porta** e só se comunica com os outros **por HTTP** (nunca importando o código do vizinho).
+2. **Cada tabela pertence a um único serviço.** Só ele lê e escreve nela. Por isso não há chaves estrangeiras entre tabelas de serviços diferentes.
+3. **Todo serviço tem as mesmas 3 camadas** (`app.py` → `service.py` → `repository.py`).
+4. **Componentes nunca dependem de um serviço.** A dependência é sempre *serviço → componente*.
+
+---
+
+## 3. Microsserviços
+
+Todos seguem o mesmo molde:
+
+```text
+services/<nome>_service/
+├── app.py          # API REST: define as rotas HTTP e chama o service.py
+├── service.py      # Regras de negócio
+└── repository.py   # Acesso ao banco (apenas as tabelas deste serviço)
+```
+
+### 3.1 Catalog Service — porta 5001
+Lista, busca e ordena produtos. Tabela: `products`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/health` | Verifica se o serviço está no ar |
+| GET | `/products?q=&metodo=&ordenacao=` | Lista produtos. `metodo`: `linear` ou `binaria`. `ordenacao`: `price_asc`, `price_desc`, `name_asc`, `name_desc` |
+| GET | `/products/<id>` | Detalhe de um produto |
+
+### 3.2 Cart Service — porta 5002
+Guarda os itens de cada carrinho (`product_id` + quantidade). Para mostrar nome e preço, **chama o Catalog Service**. Tabela: `cart_items`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/carts/<cart_id>` | Itens, subtotais e total do carrinho |
+| POST | `/carts/<cart_id>/items` | Adiciona item `{"product_id": 1, "quantity": 2}` |
+| DELETE | `/carts/<cart_id>/items/<product_id>` | Remove um item |
+| DELETE | `/carts/<cart_id>` | Esvazia o carrinho |
+
+### 3.3 Order Service — porta 5003
+Cria e consulta pedidos. É o serviço que **orquestra a compra**, chamando o Cart e o Payment. Tabelas: `orders` e `order_items`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/orders` | Lista pedidos |
+| GET | `/orders/<id>` | Detalhe de um pedido |
+| POST | `/orders` | Cria pedido `{"cart_id": "...", "customer_name": "Ana", "payment_method": "pix"}` |
+
+### 3.4 Payment Service — porta 5004
+Processa o pagamento (**simulado**). Tabela: `payments`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/payments` | `{"order_id": 1, "amount": 200.0, "method": "pix"}` |
+
+Regras simuladas: métodos aceitos são `pix`, `cartao` e `boleto`; valores **acima de R$ 5.000,00 são recusados** (serve para demonstrar o fluxo de falha). Ambos configuráveis em `config.py`.
+
+### 3.5 Frontend — porta 5000
+Não tem regra de negócio nem acesso ao banco: só monta as páginas HTML chamando os microsserviços. O carrinho do visitante é identificado por um `cart_id` guardado na sessão (cookie).
+
+---
+
+## 4. Fluxo de compra (comunicação entre serviços)
+
+```text
+Cliente clica em "Confirmar pedido"
+   │
+   ▼
+Frontend ──POST /orders──► Order Service
+                              │ 1. GET  /carts/<id>   ──► Cart Service ──GET /products/<id>──► Catalog Service
+                              │ 2. calcula o total (componente pricing) e grava o pedido
+                              │ 3. POST /payments     ──► Payment Service
+                              │ 4. atualiza status do pedido: "paid" ou "payment_failed"
+                              │ 5. se pago: DELETE /carts/<id> ──► Cart Service (esvazia)
+                              ▼
+                           resposta ao Frontend
+```
+
+Status possíveis do pedido: `created` → `paid` ou `payment_failed`.
+
+---
+
+## 5. Componentes de software reutilizáveis
+
+Ficam em `components/`. Cada um tem uma interface pública pequena e documentada no próprio arquivo.
+
+| Componente | Arquivo | Interface pública | Usado por |
+|---|---|---|---|
+| Erros | `errors.py` | `AppError`, `ValidationError`, `NotFoundError` | todos |
+| Validação | `validation.py` | `non_empty_text`, `positive_int`, `positive_number`, `require_json_fields` | Cart, Order, Payment |
+| Ordenação | `sorting.py` | `bubble_sort(lista, key, reverse)` | Catalog, `search` |
+| Busca | `search.py` | `busca_linear`, `busca_binaria` | Catalog |
+| Preços | `pricing.py` | `subtotal`, `calculate_total` | Cart, Order |
+| Banco de dados | `database.py` | `connection`, `query_all`, `query_one`, `execute`, `init_database` | todos os serviços |
+| Cliente HTTP | `http_client.py` | `get`, `post`, `delete` | Cart, Order, Frontend |
+| Fábrica de serviço | `service_app.py` | `create_service_app`, `run_service` | todos os serviços |
+
+**Exemplo de reuso:** o componente `service_app` entrega a todo microsserviço a rota `/health` e o tratamento padrão de erros em JSON. Os quatro serviços usam a mesma linha:
+
+```python
+app = create_service_app("catalog-service")
+```
+
+Outro exemplo: `search.busca_binaria` reaproveita `sorting.bubble_sort` (componente usando componente).
+
+**Diferença entre as buscas:**
+- `busca_linear` percorre toda a lista e encontra nomes que **contêm** o termo (ex.: `gamer` → *Fone Gamer*, *Mouse Gamer*, *Teclado Gamer*).
+- `busca_binaria` ordena a lista e usa busca binária para encontrar nomes que **começam com** o termo (ex.: `mou` → *Mouse Gamer*).
+
+---
+
+## 6. Banco de dados
+
+SQLite (um arquivo, sem instalação), criado automaticamente em `database/ecommerce.db`.
+
+```text
+database/
+├── schema.sql    # criação das tabelas
+├── seed.sql      # produtos iniciais
+└── init_db.py    # script para criar/recriar o banco
+```
+
+```text
+ Catalog Service         Cart Service           Order Service              Payment Service
+┌──────────────┐       ┌──────────────┐       ┌───────────────────┐      ┌───────────────┐
+│ products     │       │ cart_items   │       │ orders            │      │ payments      │
+│──────────────│       │──────────────│       │───────────────────│      │───────────────│
+│ id (PK)      │       │ id (PK)      │       │ id (PK)           │      │ id (PK)       │
+│ name         │       │ cart_id      │       │ customer_name     │      │ order_id      │
+│ description  │       │ product_id   │       │ total             │      │ amount        │
+│ price        │       │ quantity     │       │ status            │      │ method        │
+│ image        │       └──────────────┘       │ created_at        │      │ status        │
+└──────────────┘                              ├───────────────────┤      │ message       │
+                                              │ order_items       │      │ created_at    │
+                                              │ order_id (FK)     │      └───────────────┘
+                                              │ product_id        │
+                                              │ product_name      │
+                                              │ unit_price        │
+                                              │ quantity          │
+                                              └───────────────────┘
+```
+
+Pontos importantes:
+- `cart_items.product_id`, `order_items.product_id` e `payments.order_id` **não são chaves estrangeiras**: apontam para dados de *outro serviço*, que só se acessa por HTTP.
+- `order_items` guarda uma **cópia** do nome e do preço (`product_name`, `unit_price`), assim o histórico não muda se o catálogo for alterado.
+- Aqui os 4 serviços usam o **mesmo arquivo SQLite** só para simplificar. Em um sistema real, cada serviço teria seu próprio banco (padrão *database per service*).
+
+---
+
+## 7. Estrutura do projeto
+
+```text
+Projeto_Reuso_E-Commerce/
+├── components/                 # COMPONENTES reutilizáveis
+│   ├── errors.py
+│   ├── validation.py
+│   ├── sorting.py
+│   ├── search.py
+│   ├── pricing.py
+│   ├── database.py
+│   ├── http_client.py
+│   └── service_app.py
+├── services/                   # MICROSSERVIÇOS
+│   ├── catalog_service/        # app.py · service.py · repository.py
+│   ├── cart_service/
+│   ├── order_service/
+│   └── payment_service/
+├── frontend/                   # interface web (consome os serviços via HTTP)
+│   ├── app.py
+│   ├── templates/
+│   └── static/
+├── database/                   # schema.sql · seed.sql · init_db.py
+├── tests/                      # testes dos componentes
+├── config.py                   # portas, URLs dos serviços, caminhos do banco
+├── main.py                     # sobe tudo (banco + serviços + frontend)
+├── requirements.txt
+└── readme.md
+```
+
+---
+
+## 8. Tecnologias
+
+- Python 3 e Flask (APIs REST e páginas)
+- Jinja2 (templates HTML)
+- SQLite (módulo `sqlite3` do Python)
+- Requests (chamadas HTTP entre serviços)
+- Pytest (testes)
+
+---
+
+## 9. Como executar
 
 ```bash
-cd "C:\Users\Athisson Alberto\Documents\Projetos\E-Commerce - Reuso de Software"
+cd "C:\Users\Athisson Alberto\Documents\GitHub\Projeto_Reuso_E-Commerce"
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 python main.py
 ```
 
-A aplicação ficará disponível em:
+O `main.py` cria o banco (se necessário) e inicia os 5 processos. Acesse **http://127.0.0.1:5000**. Para encerrar, use `Ctrl + C`.
 
-```text
-http://127.0.0.1:5000
+**Subir só um serviço** (útil para estudar isoladamente):
+
+```bash
+python -m services.catalog_service.app
 ```
 
-## 9. Conclusão
-O projeto demonstrou uma abordagem acadêmica de framework para e-commerce, unindo práticas de reutilização de software, organização por camadas e arquitetura baseada em microservices lógicos. Mesmo sendo uma solução simples, ela apresenta uma base sólida para entendimento de engenharia de software, arquitetura de sistemas e organização modular de aplicações web.
+**Recriar o banco do zero:**
+
+```bash
+python database/init_db.py --reset
+```
+
+### Testando as APIs diretamente
+
+Com tudo rodando, cada serviço responde por conta própria:
+
+```bash
+curl http://127.0.0.1:5001/products
+curl "http://127.0.0.1:5001/products?q=mou&metodo=binaria"
+curl http://127.0.0.1:5002/health
+
+curl -X POST http://127.0.0.1:5002/carts/teste/items -H "Content-Type: application/json" -d "{\"product_id\": 1, \"quantity\": 2}"
+curl http://127.0.0.1:5002/carts/teste
+
+curl -X POST http://127.0.0.1:5003/orders -H "Content-Type: application/json" -d "{\"cart_id\": \"teste\", \"customer_name\": \"Ana\", \"payment_method\": \"pix\"}"
+```
+
+### Testes automatizados
+
+```bash
+python -m pytest
+```
+
+---
+
+## 10. Cenários para demonstrar na apresentação
+
+1. **Compra aprovada:** adicione o *Mouse Gamer*, vá ao checkout e confirme → pedido `paid` e carrinho esvaziado.
+2. **Pagamento recusado:** adicione 2 *Notebooks* (R$ 6.000,00) → Payment Service recusa, pedido fica `payment_failed` e o carrinho é mantido.
+3. **Independência dos serviços:** derrube o Payment Service (feche só o processo dele) → o catálogo e o carrinho continuam funcionando; só o checkout falha, com mensagem de serviço indisponível.
+4. **Reuso:** mostre que `service_app.py`, `database.py` e `http_client.py` são usados por mais de um serviço sem nenhuma cópia de código.
+
+---
+
+## 11. Possíveis evoluções
+
+- Um banco separado para cada serviço
+- Autenticação de clientes e histórico de pedidos por usuário
+- API Gateway único na frente dos serviços
+- Docker / docker-compose para subir cada serviço em um contêiner
+- Comunicação assíncrona (fila de mensagens) entre Order e Payment
+
+---
+
+## 12. Conclusão
+
+O projeto mostra, em escala pequena, como **microsserviços** (separação por responsabilidade de negócio, comunicação por HTTP, dados próprios) e **componentes de software** (peças reutilizáveis, independentes dos serviços) se complementam para construir um framework de e-commerce fácil de entender, manter e estender.

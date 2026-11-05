@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Erro{% endblock %}
+{% block heading %}Ops...{% endblock %}
+
+{% block content %}
+<section class="hero single">
+    <div class="hero-copy">
+        <span class="eyebrow">Erro {{ status }}</span>
+        <h2>Algo deu errado.</h2>
+        <p>{{ message }}</p>
+        {% if status == 503 %}
+        <p>Verifique se todos os microsserviços estão rodando (<code>python main.py</code>).</p>
+        {% endif %}
+        <div class="hero-actions">
+            <a class="primary-btn" href="{{ url_for('home') }}">Voltar ao início</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

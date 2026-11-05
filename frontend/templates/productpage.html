@@ -1,44 +1,37 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends "base.html" %}
+{% block title %}{{ produto.name if produto else 'Produto não encontrado' }}{% endblock %}
+{% block heading %}Produto{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produto: {{ product_name }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-    <div class="container">
-        <div><a href="{{ url_for('home_bp.home') }}">Início</a> / <a href="{{ url_for('catalog_bp.products') }}">Produtos</a></div>
-
-        <div class="product-card">
-            {% if not_found %}
-            <div class="not-found">
-                <h1>Produto não encontrado</h1>
-                <p>O produto <b>{{ product_name }}</b> não foi localizado.</p>
-                <a href="{{ url_for('catalog_bp.products') }}" class="buy-btn" style="background:#888;">Voltar</a>
-            </div>
-            {% else %}
-            <div class="product-image-wrap">
-                <img src="{{ url_for('static', filename=product_img) if product_img else 'https://via.placeholder.com/400x400?text=' + product_name }}" alt="Imagem de {{ product_name }}" class="product-image">
-            </div>
-            <div class="product-info">
-                <h1 class="product-title">{{ product_name }}</h1>
-                <div class="product-description">
-                    <p>{{ product_desc }}</p>
-                </div>
-                <div class="product-price">R$ {{ '%.2f'|format(product_price) }}</div>
-                <form action="{{ url_for('cart_bp.add_to_cart') }}" method="post">
-                    <input type="hidden" name="product_name" value="{{ product_name }}">
-                    <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="buy-btn">Comprar agora</button>
-                </form>
-            </div>
-            {% endif %}
+{% block content %}
+<section class="hero product-detail">
+    {% if produto %}
+    <img class="product-detail-img"
+         src="{{ url_for('static', filename=produto.image or 'img/placeholder.svg') }}"
+         alt="{{ produto.name }}"
+         onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/placeholder.svg') }}'">
+    <div class="hero-copy">
+        <span class="eyebrow">Detalhes</span>
+        <h2>{{ produto.name }}</h2>
+        <p>{{ produto.description }}</p>
+        <p class="price">R$ {{ '%.2f'|format(produto.price) }}</p>
+        <div class="hero-actions">
+            <form action="{{ url_for('add_to_cart') }}" method="post">
+                <input type="hidden" name="product_id" value="{{ produto.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="primary-btn">Comprar agora</button>
+            </form>
+            <a class="btn-back" href="{{ url_for('catalog') }}">Voltar</a>
         </div>
     </div>
-</body>
-
-</html>
+    {% else %}
+    <div class="hero-copy">
+        <span class="eyebrow">Ops</span>
+        <h2>Produto não encontrado</h2>
+        <p>O produto de código <b>{{ product_id }}</b> não existe no catálogo.</p>
+        <div class="hero-actions">
+            <a class="btn-back" href="{{ url_for('catalog') }}">Voltar ao catálogo</a>
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

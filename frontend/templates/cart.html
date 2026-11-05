@@ -1,60 +1,41 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Carrinho</title>
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
-</head>
-<body class="shop-body">
-    <header class="topbar">
-        <div class="brand-wrap">
-            <div class="brand-mark">F</div>
-            <div>
-                <p class="brand-eyebrow">Framework</p>
-                <h1 class="title">Carrinho</h1>
+{% extends "base.html" %}
+{% block title %}Carrinho{% endblock %}
+{% block heading %}Carrinho{% endblock %}
+
+{% block content %}
+<section class="hero single">
+    <div class="hero-copy">
+        <span class="eyebrow">Resumo</span>
+        <h2>Carrinho de compras</h2>
+
+        {% if cart['items'] %}
+        <div class="cart-list">
+            {% for item in cart['items'] %}
+            <div class="cart-item">
+                <div>
+                    <strong>{{ item.name }}</strong><br>
+                    <span>{{ item.quantity }} x R$ {{ '%.2f'|format(item.price) }}</span>
+                </div>
+                <div class="cart-item-right">
+                    <strong>R$ {{ '%.2f'|format(item.subtotal) }}</strong>
+                    <form action="{{ url_for('remove_from_cart', product_id=item.product_id) }}" method="post">
+                        <button type="submit" class="btn-back small">Remover</button>
+                    </form>
+                </div>
             </div>
+            {% endfor %}
         </div>
-        <nav class="nav" aria-label="Navegação principal">
-            <a href="{{ url_for('catalog_bp.products') }}" class="nav-btn">Catálogo</a>
-            <a href="{{ url_for('cart_bp.cart') }}" class="nav-btn active">Carrinho</a>
-            <a href="{{ url_for('checkout_bp.checkout_page') }}" class="nav-btn">Checkout</a>
-            <a href="{{ url_for('order_bp.orders') }}" class="nav-btn">Pedidos</a>
-        </nav>
-    </header>
-
-    <main class="page-shell">
-        <section class="hero" style="grid-template-columns: 1fr;">
-            <div class="hero-copy">
-                <span class="eyebrow">Resumo</span>
-                <h2>Carrinho de compras</h2>
-
-                {% if items %}
-                    <div class="cart-list">
-                        {% for item in items %}
-                        <div class="cart-item">
-                            <div>
-                                <strong>{{ item.name }}</strong><br>
-                                <span>Quantidade: {{ item.quantity }}</span>
-                            </div>
-                            <span>{{ item.quantity }} item(ns)</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <p class="hint">Total de itens: <strong>{{ total_items }}</strong></p>
-                    <div class="hero-actions">
-                        <a class="primary-btn" href="{{ url_for('checkout_bp.checkout_page') }}">Finalizar compra</a>
-                        <a class="btn-back" href="{{ url_for('catalog_bp.products') }}">Voltar</a>
-                    </div>
-                {% else %}
-                    <p class="empty">Seu carrinho está vazio. Adicione produtos no catálogo.</p>
-                    <div class="hero-actions">
-                        <a class="primary-btn" href="{{ url_for('catalog_bp.products') }}">Ir ao catálogo</a>
-                        <a class="btn-back" href="{{ url_for('catalog_bp.products') }}">Voltar</a>
-                    </div>
-                {% endif %}
-            </div>
-        </section>
-    </main>
-</body>
-</html>
+        <p class="hint">Itens: <strong>{{ cart.total_items }}</strong> • Total: <strong>R$ {{ '%.2f'|format(cart.total) }}</strong></p>
+        <div class="hero-actions">
+            <a class="primary-btn" href="{{ url_for('checkout') }}">Finalizar compra</a>
+            <a class="btn-back" href="{{ url_for('catalog') }}">Continuar comprando</a>
+        </div>
+        {% else %}
+        <p class="empty">Seu carrinho está vazio. Adicione produtos no catálogo.</p>
+        <div class="hero-actions">
+            <a class="primary-btn" href="{{ url_for('catalog') }}">Ir ao catálogo</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

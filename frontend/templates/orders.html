@@ -1,40 +1,42 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pedidos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body class="shop-body">
-    <header class="topbar">
-        <div class="brand-wrap">
-            <div class="brand-mark">F</div>
-            <div>
-                <p class="brand-eyebrow">Framework</p>
-                <h1 class="title">Pedidos</h1>
-            </div>
-        </div>
-        <nav class="nav" aria-label="Navegação principal">
-            <a href="{{ url_for('catalog_bp.products') }}" class="nav-btn">Catálogo</a>
-            <a href="{{ url_for('cart_bp.cart') }}" class="nav-btn">Carrinho</a>
-            <a href="{{ url_for('checkout_bp.checkout_page') }}" class="nav-btn">Checkout</a>
-            <a href="{{ url_for('order_bp.orders') }}" class="nav-btn active">Pedidos</a>
-        </nav>
-    </header>
+{% extends "base.html" %}
+{% block title %}Pedidos{% endblock %}
+{% block heading %}Pedidos{% endblock %}
 
-    <main class="page-shell">
-        <section class="hero" style="grid-template-columns: 1fr;">
-            <div class="hero-copy">
-                <span class="eyebrow">Histórico</span>
-                <h2>Controle centralizado de pedidos.</h2>
-                <p>Este módulo simula o painel de pedidos do cliente e pode ser expandido com rastreio, status, pagamento e histórico completo.</p>
-                <div class="hero-actions">
-                    <a class="primary-btn" href="{{ url_for('catalog_bp.products') }}">Ir ao catálogo</a>
-                    <a class="btn-back" href="{{ url_for('cart_bp.cart') }}">Voltar</a>
+{% block content %}
+<section class="hero single">
+    <div class="hero-copy">
+        <span class="eyebrow">Histórico</span>
+        <h2>Pedidos realizados</h2>
+
+        {% if orders %}
+        <div class="cart-list">
+            {% for order in orders %}
+            <div class="cart-item order-item">
+                <div>
+                    <strong>Pedido #{{ order.id }} — {{ order.customer_name }}</strong><br>
+                    <span>{{ order.created_at }}</span>
+                    <ul class="order-lines">
+                        {% for item in order['items'] %}
+                        <li>{{ item.quantity }} x {{ item.product_name }} (R$ {{ '%.2f'|format(item.unit_price) }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="cart-item-right">
+                    <strong>R$ {{ '%.2f'|format(order.total) }}</strong>
+                    <span class="badge badge-{{ order.status }}">
+                        {% if order.status == 'paid' %}Pago{% elif order.status == 'payment_failed' %}Pagamento recusado{% else %}Criado{% endif %}
+                    </span>
                 </div>
             </div>
-        </section>
-    </main>
-</body>
-</html>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty">Nenhum pedido realizado ainda.</p>
+        {% endif %}
+
+        <div class="hero-actions">
+            <a class="primary-btn" href="{{ url_for('catalog') }}">Ir ao catálogo</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

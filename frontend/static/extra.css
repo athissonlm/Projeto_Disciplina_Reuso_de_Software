@@ -1,0 +1,147 @@
+/* Estilos complementares (usados por base.html, além do style.css). */
+
+.hero.single {
+    grid-template-columns: 1fr;
+}
+
+.hero-copy h2 {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+/* Mensagens (flash) */
+.flash {
+    margin: 0 6px 18px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+}
+
+.flash-success {
+    background: rgba(138, 227, 170, 0.12);
+    border-color: rgba(138, 227, 170, 0.4);
+    color: var(--success);
+}
+
+.flash-error {
+    background: rgba(255, 120, 120, 0.12);
+    border-color: rgba(255, 120, 120, 0.4);
+    color: #ffb3b3;
+}
+
+/* Busca e filtros do catálogo */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 6px 12px;
+}
+
+.controls input,
+.controls select,
+.checkout-form input,
+.checkout-form select {
+    min-height: 46px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font: inherit;
+}
+
+.controls input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.controls select option,
+.checkout-form select option {
+    color: #000;
+}
+
+.hint {
+    margin: 8px 6px;
+    color: var(--muted);
+}
+
+.results-pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--accent-soft);
+    font-size: 0.85rem;
+}
+
+.btn-back.small {
+    min-height: 34px;
+    padding: 0 14px;
+    font-size: 0.85rem;
+}
+
+/* Página de produto */
+.product-detail {
+    grid-template-columns: 1fr 1fr;
+}
+
+.product-detail-img {
+    width: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
+    background: #10243d;
+}
+
+/* Carrinho / pedidos */
+.cart-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.order-lines {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: rgba(89, 180, 255, 0.14);
+    color: var(--accent-soft) !important;
+}
+
+.badge-paid {
+    background: rgba(138, 227, 170, 0.15);
+    color: var(--success) !important;
+}
+
+.badge-payment_failed {
+    background: rgba(255, 120, 120, 0.15);
+    color: #ffb3b3 !important;
+}
+
+/* Checkout */
+.checkout-form {
+    display: grid;
+    gap: 14px;
+    max-width: 460px;
+}
+
+.checkout-form label {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+    .product-detail {
+        grid-template-columns: 1fr;
+    }
+}

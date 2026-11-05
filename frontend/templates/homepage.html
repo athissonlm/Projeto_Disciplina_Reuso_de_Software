@@ -1,80 +1,25 @@
-<!doctype html>
-<html lang="pt-BR">
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block heading %}Catálogo{% endblock %}
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Catálogo | E-commerce</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body class="shop-body">
-    <header class="topbar">
-        <div class="brand-wrap">
-            <div class="brand-mark">F</div>
-            <div>
-                <p class="brand-eyebrow">Framework</p>
-                <h1 class="title">Catálogo</h1>
-            </div>
+{% block content %}
+<section class="catalog-section" aria-label="Catálogo de produtos">
+    <div class="section-head">
+        <div>
+            <span class="eyebrow alt">Produtos</span>
+            <h3>Catálogo disponível</h3>
         </div>
+        <span class="results-pill">{{ total or 0 }} itens</span>
+    </div>
 
-        <nav class="nav" aria-label="Navegação principal">
-            <a href="{{ url_for('catalog_bp.products') }}" class="nav-btn active">Catálogo</a>
-            <a href="{{ url_for('cart_bp.cart') }}" class="nav-btn">Carrinho</a>
-            <a href="{{ url_for('checkout_bp.checkout_page') }}" class="nav-btn">Checkout</a>
-            <a href="{{ url_for('order_bp.orders') }}" class="nav-btn">Pedidos</a>
-        </nav>
-    </header>
-
-    <main class="page-shell">
-        <section class="catalog-section" aria-label="Catálogo de produtos">
-            <div class="section-head">
-                <div>
-                    <span class="eyebrow alt">Produtos</span>
-                    <h3>Catálogo disponível</h3>
-                </div>
-                <span class="results-pill">{{ total or 0 }} itens</span>
-            </div>
-
-            {% if produtos %}
-                <div class="grid">
-                    {% for p in produtos %}
-                        <article class="card">
-                            <img src="{{ url_for('static', filename=p.img if p.img else 'img/placeholder.jpg') }}" alt="{{ p.name }}">
-                            <div class="card-body">
-                                <span class="tag">Popular</span>
-                                <a href="{{ url_for('catalog_bp.product_page', product_name=p.name) }}" class="product-name-link" aria-label="{{ p.name }}">
-                                    <h3>{{ p.name }}</h3>
-                                </a>
-                                <p class="description">{{ p.description }}</p>
-                                <div class="card-footer">
-                                    <span class="price">R$ {{ '%.2f'|format(p.price or 0) }}</span>
-                                    <form action="{{ url_for('cart_bp.add_to_cart') }}" method="post" class="mini-form">
-                                        <input type="hidden" name="product_name" value="{{ p.name }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="cart-btn">Adicionar</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </article>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="empty">Nenhum produto disponível no catálogo.</p>
-            {% endif %}
-        </section>
-    </main>
-
-    <footer class="foot">
-        <small>© <span id="year"></span> — Framework com microservices lógicos e componentes reutilizáveis.</small>
-    </footer>
-
-    <script>
-        document.getElementById('year').textContent = new Date().getFullYear();
-    </script>
-</body>
-
-</html>
+    {% if produtos %}
+    <div class="grid">
+        {% for p in produtos %}
+            {% include "_product_card.html" %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">Nenhum produto disponível no catálogo.</p>
+    {% endif %}
+</section>
+{% endblock %}

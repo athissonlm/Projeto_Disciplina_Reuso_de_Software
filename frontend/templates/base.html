@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}E-commerce{% endblock %} | Framework</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='extra.css') }}">
+</head>
+<body class="shop-body">
+    <header class="topbar">
+        <div class="brand-wrap">
+            <div class="brand-mark">F</div>
+            <div>
+                <p class="brand-eyebrow">Framework</p>
+                <h1 class="title">{% block heading %}E-commerce{% endblock %}</h1>
+            </div>
+        </div>
+        <nav class="nav" aria-label="Navegação principal">
+            <a href="{{ url_for('catalog') }}" class="nav-btn {% if request.endpoint in ('catalog', 'home', 'product_page') %}active{% endif %}">Catálogo</a>
+            <a href="{{ url_for('cart') }}" class="nav-btn {% if request.endpoint == 'cart' %}active{% endif %}">Carrinho</a>
+            <a href="{{ url_for('checkout') }}" class="nav-btn {% if request.endpoint == 'checkout' %}active{% endif %}">Checkout</a>
+            <a href="{{ url_for('orders') }}" class="nav-btn {% if request.endpoint == 'orders' %}active{% endif %}">Pedidos</a>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="foot">
+        <small>Framework de e-commerce — microsserviços + componentes de software reutilizáveis.</small>
+    </footer>
+</body>
+</html>
