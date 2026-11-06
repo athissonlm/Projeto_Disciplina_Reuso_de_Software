@@ -37,7 +37,7 @@
                 <a class="btn-back" href="{{ url_for('cart') }}">Voltar ao carrinho</a>
             </div>
         </form>
-        <p class="hint">Pagamento simulado: valores acima de R$ 5000,00 são recusados.</p>
+        <p class="hint">Pagamento simulado: valores acima de R$ {{ '%.2f'|format(payment_limit) }} são recusados.</p>
     </div>
 </section>
 {% endblock %}

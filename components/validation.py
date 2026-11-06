@@ -1,7 +1,7 @@
 """Componente: Validação.
 
 Funções simples para validar dados recebidos pelas APIs.
-Interface pública: non_empty_text, positive_int, require_json_fields.
+Interface pública: non_empty_text, positive_int, positive_number, require_json_fields.
 """
 
 from components.errors import ValidationError

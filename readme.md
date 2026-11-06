@@ -142,11 +142,11 @@ Ficam em `components/`. Cada um tem uma interface pública pequena e documentada
 | Ordenação | `sorting.py` | `bubble_sort(lista, key, reverse)` | Catalog, `search` |
 | Busca | `search.py` | `busca_linear`, `busca_binaria` | Catalog |
 | Preços | `pricing.py` | `subtotal`, `calculate_total` | Cart, Order |
-| Banco de dados | `database.py` | `connection`, `query_all`, `query_one`, `execute`, `init_database` | todos os serviços |
+| Banco de dados | `database.py` | `connection`, `query_all`, `query_one`, `execute`, `init_database`, `ensure_database` | todos os serviços |
 | Cliente HTTP | `http_client.py` | `get`, `post`, `delete` | Cart, Order, Frontend |
 | Fábrica de serviço | `service_app.py` | `create_service_app`, `run_service` | todos os serviços |
 
-**Exemplo de reuso:** o componente `service_app` entrega a todo microsserviço a rota `/health` e o tratamento padrão de erros em JSON. Os quatro serviços usam a mesma linha:
+**Exemplo de reuso:** o componente `service_app` entrega a todo microsserviço a rota `/health` e o tratamento padrão de erros em JSON. Os quatro serviços usam a mesma chamada, mudando só o nome:
 
 ```python
 app = create_service_app("catalog-service")
@@ -258,7 +258,7 @@ O `main.py` cria o banco (se necessário) e inicia os 5 processos. Acesse **http
 python -m services.catalog_service.app
 ```
 
-**Recriar o banco do zero:**
+**Recriar o banco do zero** (pare os serviços antes, pois o Windows não deixa apagar um arquivo em uso):
 
 ```bash
 python backend/init_db.py --reset

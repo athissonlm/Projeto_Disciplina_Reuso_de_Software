@@ -20,16 +20,16 @@ ORDENACOES = {
 def list_products(q="", metodo="linear", ordenacao="price_asc"):
     produtos = repository.get_all_products()
 
-    chave, decrescente = ORDENACOES.get(ordenacao, ORDENACOES["price_asc"])
-    produtos = bubble_sort(produtos, key=chave, reverse=decrescente)
-
+    # 1) filtra pela busca (se houver termo)
     if q:
         if metodo == "binaria":
             produtos = busca_binaria(produtos, q)
         else:
             produtos = busca_linear(produtos, q)
 
-    return produtos
+    # 2) ordena o resultado pelo critério escolhido (vale para qualquer método de busca)
+    chave, decrescente = ORDENACOES.get(ordenacao, ORDENACOES["price_asc"])
+    return bubble_sort(produtos, key=chave, reverse=decrescente)
 
 
 def get_product(product_id):

@@ -11,7 +11,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 
 from components import http_client
 from components.errors import AppError
-from config import HOST, PAYMENT_METHODS, PORTS, SECRET_KEY, SERVICE_URLS
+from config import HOST, PAYMENT_LIMIT, PAYMENT_METHODS, PORTS, SECRET_KEY, SERVICE_URLS
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY
@@ -116,7 +116,9 @@ def checkout():
     if not data["items"]:
         flash("Seu carrinho está vazio.", "error")
         return redirect(url_for("cart"))
-    return render_template("checkout.html", cart=data, payment_methods=PAYMENT_METHODS)
+    return render_template(
+        "checkout.html", cart=data, payment_methods=PAYMENT_METHODS, payment_limit=PAYMENT_LIMIT
+    )
 
 
 @app.route("/orders")
