@@ -1,7 +1,12 @@
 # Framework para Sistemas de E-commerce
 ### Microsserviços + Componentes de Software Reutilizáveis
 
-Projeto acadêmico (disciplina de Reuso de Software) que mostra, de forma **didática e simples**, como organizar um e-commerce em **microsserviços** e **componentes reutilizáveis**.
+Projeto acadêmico que mostra, de forma **didática e simples**, como organizar um e-commerce em **microsserviços** e **componentes reutilizáveis**.
+
+Disciplina: Reuso de Software e Metodologias Ágeis
+
+Discentes: Athisson Alberto Lima Marques e Pedro Henrique Santos da Silva
+Docente: Arturo Hernandez Dominguez
 
 ---
 
@@ -22,7 +27,7 @@ O projeto separa duas coisas que costumam ficar misturadas:
 
 ```text
                          ┌──────────────────────────┐
-                         │   Frontend  (porta 5000)  │   páginas HTML (Flask + Jinja)
+                         │   Frontend  (porta 5000) │   páginas HTML (Flask + Jinja)
                          └─────────────┬────────────┘
                                        │ HTTP
         ┌──────────────────────────────┼───────────────────────────┐
@@ -250,15 +255,15 @@ pip install -r requirements.txt
 python main.py
 ```
 
-O `main.py` cria o banco (se necessário) e inicia os 5 processos. Acesse **http://127.0.0.1:5000**. Para encerrar, use `Ctrl + C`.
+O `main.py` cria o banco (se necessário) e inicia os 5 processos.
 
-**Subir só um serviço** (útil para estudar isoladamente):
+**Subir só um serviço**:
 
 ```bash
 python -m services.catalog_service.app
 ```
 
-**Recriar o banco do zero** (pare os serviços antes, pois o Windows não deixa apagar um arquivo em uso):
+**Recriar o banco do zero**:
 
 ```bash
 python backend/init_db.py --reset
