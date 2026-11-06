@@ -1,8 +1,8 @@
 """Inicializa o banco de dados SQLite do projeto.
 
 Uso (a partir da raiz do projeto):
-    python database/init_db.py           # cria o banco se necessário
-    python database/init_db.py --reset   # apaga e recria tudo do zero
+    python backend/init_db.py           # cria o banco se necessário
+    python backend/init_db.py --reset   # apaga e recria tudo do zero
 """
 
 import sys

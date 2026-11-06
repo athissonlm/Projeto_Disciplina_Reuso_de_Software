@@ -46,7 +46,7 @@ O projeto separa duas coisas que costumam ficar misturadas:
         │  database · http_client · service_app                       │
         └────────────────────────────────────────────────────────────┘
 
-                        database/ecommerce.db  (SQLite)
+                        backend/ecommerce.db  (SQLite)
 ```
 
 Regras da arquitetura:
@@ -162,10 +162,10 @@ Outro exemplo: `search.busca_binaria` reaproveita `sorting.bubble_sort` (compone
 
 ## 6. Banco de dados
 
-SQLite (um arquivo, sem instalação), criado automaticamente em `database/ecommerce.db`.
+SQLite (um arquivo, sem instalação), criado automaticamente em `backend/ecommerce.db`.
 
 ```text
-database/
+backend/
 ├── schema.sql    # criação das tabelas
 ├── seed.sql      # produtos iniciais
 └── init_db.py    # script para criar/recriar o banco
@@ -220,7 +220,7 @@ Projeto_Reuso_E-Commerce/
 │   ├── app.py
 │   ├── templates/
 │   └── static/
-├── database/                   # schema.sql · seed.sql · init_db.py
+├── backend/                    # banco de dados: schema.sql · seed.sql · init_db.py
 ├── tests/                      # testes dos componentes
 ├── config.py                   # portas, URLs dos serviços, caminhos do banco
 ├── main.py                     # sobe tudo (banco + serviços + frontend)
@@ -243,7 +243,7 @@ Projeto_Reuso_E-Commerce/
 ## 9. Como executar
 
 ```bash
-cd "C:\Users\Athisson Alberto\Documents\GitHub\Projeto_Reuso_E-Commerce"
+cd Projeto_Reuso_E-Commerce
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
@@ -261,7 +261,7 @@ python -m services.catalog_service.app
 **Recriar o banco do zero:**
 
 ```bash
-python database/init_db.py --reset
+python backend/init_db.py --reset
 ```
 
 ### Testando as APIs diretamente
@@ -287,16 +287,7 @@ python -m pytest
 
 ---
 
-## 10. Cenários para demonstrar na apresentação
-
-1. **Compra aprovada:** adicione o *Mouse Gamer*, vá ao checkout e confirme → pedido `paid` e carrinho esvaziado.
-2. **Pagamento recusado:** adicione 2 *Notebooks* (R$ 6.000,00) → Payment Service recusa, pedido fica `payment_failed` e o carrinho é mantido.
-3. **Independência dos serviços:** derrube o Payment Service (feche só o processo dele) → o catálogo e o carrinho continuam funcionando; só o checkout falha, com mensagem de serviço indisponível.
-4. **Reuso:** mostre que `service_app.py`, `database.py` e `http_client.py` são usados por mais de um serviço sem nenhuma cópia de código.
-
----
-
-## 11. Possíveis evoluções
+## 10. Possíveis evoluções
 
 - Um banco separado para cada serviço
 - Autenticação de clientes e histórico de pedidos por usuário
@@ -306,6 +297,6 @@ python -m pytest
 
 ---
 
-## 12. Conclusão
+## 11. Conclusão
 
 O projeto mostra, em escala pequena, como **microsserviços** (separação por responsabilidade de negócio, comunicação por HTTP, dados próprios) e **componentes de software** (peças reutilizáveis, independentes dos serviços) se complementam para construir um framework de e-commerce fácil de entender, manter e estender.

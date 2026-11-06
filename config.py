@@ -10,9 +10,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
 # --- Banco de dados (SQLite) -------------------------------------------
-DB_PATH = BASE_DIR / "database" / "ecommerce.db"
-SCHEMA_PATH = BASE_DIR / "database" / "schema.sql"
-SEED_PATH = BASE_DIR / "database" / "seed.sql"
+DB_PATH = BASE_DIR / "backend" / "ecommerce.db"
+SCHEMA_PATH = BASE_DIR / "backend" / "schema.sql"
+SEED_PATH = BASE_DIR / "backend" / "seed.sql"
 
 # --- Registro de serviços ----------------------------------------------
 HOST = "127.0.0.1"

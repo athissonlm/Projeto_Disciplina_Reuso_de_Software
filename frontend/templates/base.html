@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}E-commerce{% endblock %} | Framework</title>
+    <title>{% block title %}E-commerce{% endblock %} | E-commerce Online</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='extra.css') }}">
 </head>
 <body class="shop-body">
     <header class="topbar">
         <div class="brand-wrap">
-            <div class="brand-mark">F</div>
+            <div class="brand-mark">E</div>
             <div>
-                <p class="brand-eyebrow">Framework</p>
+                <p class="brand-eyebrow">E-commerce Online</p>
                 <h1 class="title">{% block heading %}E-commerce{% endblock %}</h1>
             </div>
         </div>
@@ -33,9 +33,5 @@
 
         {% block content %}{% endblock %}
     </main>
-
-    <footer class="foot">
-        <small>Framework de e-commerce — microsserviços + componentes de software reutilizáveis.</small>
-    </footer>
 </body>
 </html>

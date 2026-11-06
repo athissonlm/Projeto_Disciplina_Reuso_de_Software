@@ -16,6 +16,7 @@
         <option value="name_desc" {% if ordenacao == 'name_desc' %}selected{% endif %}>Nome Z→A</option>
     </select>
     <button class="btn-primary" type="submit">Aplicar</button>
+    <a class="btn-back" href="{{ url_for('catalog') }}">Limpar filtro</a>
 </form>
 
 <p class="hint">

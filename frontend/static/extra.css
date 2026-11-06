@@ -1,5 +1,11 @@
 /* Estilos complementares (usados por base.html, além do style.css). */
 
+/* auto-fill (em vez de auto-fit) mantém as colunas vazias, então o card
+   continua do mesmo tamanho mesmo quando a busca retorna poucos produtos. */
+.grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
 .hero.single {
     grid-template-columns: 1fr;
 }
