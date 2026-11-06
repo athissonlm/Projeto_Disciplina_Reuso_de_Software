@@ -3,9 +3,8 @@
 
 Projeto acadêmico que mostra, de forma **didática e simples**, como organizar um e-commerce em **microsserviços** e **componentes reutilizáveis**.
 
-Disciplina: Reuso de Software e Metodologias Ágeis
-
-Discentes: Athisson Alberto Lima Marques e Pedro Henrique Santos da Silva
+Disciplina: Reuso de Software e Metodologias Ágeis  
+Discentes: Athisson Alberto Lima Marques e Pedro Henrique Santos da Silva  
 Docente: Arturo Hernandez Dominguez
 
 ---
@@ -46,9 +45,9 @@ O projeto separa duas coisas que costumam ficar misturadas:
                                                            └────────────────┘
 
         ┌────────────────────────────────────────────────────────────┐
-        │  components/  (usados por TODOS os serviços acima)          │
-        │  errors · validation · sorting · search · pricing ·         │
-        │  database · http_client · service_app                       │
+        │  components/  (usados por TODOS os serviços acima)         │
+        │  errors · validation · sorting · search · pricing ·        │
+        │  database · http_client · service_app                      │
         └────────────────────────────────────────────────────────────┘
 
                         backend/ecommerce.db  (SQLite)
