@@ -1,8 +1,9 @@
 """Frontend (porta 5000) - interface web do e-commerce.
 
 Não tem regra de negócio nem acesso ao banco: apenas monta as páginas
-chamando os microsserviços por HTTP (catálogo, carrinho e pedidos).
+chamando os microsserviços por HTTP, SEMPRE através do API Gateway.
 O carrinho do visitante é identificado por um cart_id guardado na sessão.
+O nome da loja e as formas de pagamento vêm da aplicação ativa (hotspots).
 """
 
 import uuid
@@ -11,14 +12,23 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 
 from components import http_client
 from components.errors import AppError
-from config import HOST, PAYMENT_LIMIT, PAYMENT_METHODS, PORTS, SECRET_KEY, SERVICE_URLS
+from config import HOST, PORTS, SECRET_KEY, SERVICE_URLS
+from framework.loader import get_application
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY
 
-CATALOG = SERVICE_URLS["catalog"]
-CART = SERVICE_URLS["cart"]
-ORDER = SERVICE_URLS["order"]
+APLICACAO = get_application()
+
+GATEWAY = f"{SERVICE_URLS['gateway']}/api"
+CATALOG = f"{GATEWAY}/catalog"
+CART = f"{GATEWAY}/cart"
+ORDER = f"{GATEWAY}/order"
+
+
+@app.context_processor
+def dados_da_loja():
+    return {"loja_nome": APLICACAO.nome_loja()}
 
 
 def current_cart_id():
@@ -116,8 +126,13 @@ def checkout():
     if not data["items"]:
         flash("Seu carrinho está vazio.", "error")
         return redirect(url_for("cart"))
+    quote = http_client.get(f"{ORDER}/orders/quote/{cart_id}")
     return render_template(
-        "checkout.html", cart=data, payment_methods=PAYMENT_METHODS, payment_limit=PAYMENT_LIMIT
+        "checkout.html",
+        cart=data,
+        quote=quote,
+        payment_methods=APLICACAO.metodos_pagamento(),
+        payment_limit=APLICACAO.limite_pagamento(),
     )
 
 

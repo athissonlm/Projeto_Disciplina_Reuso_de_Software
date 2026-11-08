@@ -11,14 +11,19 @@
         {% if orders %}
         <div class="cart-list">
             {% for order in orders %}
+            {% set ns = namespace(soma=0) %}
             <div class="cart-item order-item">
                 <div>
                     <strong>Pedido #{{ order.id }} — {{ order.customer_name }}</strong><br>
                     <span>{{ order.created_at }}</span>
                     <ul class="order-lines">
                         {% for item in order['items'] %}
+                        {% set ns.soma = ns.soma + item.unit_price * item.quantity %}
                         <li>{{ item.quantity }} x {{ item.product_name }} (R$ {{ '%.2f'|format(item.unit_price) }})</li>
                         {% endfor %}
+                        {% if (order.total - ns.soma)|abs > 0.005 %}
+                        <li>Frete/ajustes: R$ {{ '%.2f'|format(order.total - ns.soma) }}</li>
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="cart-item-right">

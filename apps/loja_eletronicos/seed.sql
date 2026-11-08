@@ -1,7 +1,5 @@
--- Dados iniciais do catálogo.
--- Usa "upsert" (INSERT ... ON CONFLICT DO UPDATE): se o produto já existir,
--- seus dados são atualizados (ex.: caminho da imagem) em vez de duplicados.
--- Assim o script é seguro para rodar mais de uma vez.
+-- Dados iniciais do catálogo da LOJA DE ELETRÔNICOS.
+-- Usa "upsert" (INSERT ... ON CONFLICT DO UPDATE): seguro para rodar mais de uma vez.
 -- Os caminhos de imagem são relativos a frontend/static/.
 
 INSERT INTO products (id, name, description, price, image) VALUES

@@ -3,17 +3,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}E-commerce{% endblock %} | E-commerce Online</title>
+    <title>{% block title %}Loja{% endblock %} | {{ loja_nome }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='extra.css') }}">
 </head>
 <body class="shop-body">
     <header class="topbar">
         <div class="brand-wrap">
-            <div class="brand-mark">E</div>
+            <div class="brand-mark">{{ loja_nome[:1] }}</div>
             <div>
-                <p class="brand-eyebrow">E-commerce Online</p>
-                <h1 class="title">{% block heading %}E-commerce{% endblock %}</h1>
+                <p class="brand-eyebrow">{{ loja_nome }}</p>
+                <h1 class="title">{% block heading %}{{ loja_nome }}{% endblock %}</h1>
             </div>
         </div>
         <nav class="nav" aria-label="Navegação principal">

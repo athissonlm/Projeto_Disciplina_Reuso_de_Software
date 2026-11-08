@@ -19,7 +19,10 @@
             </div>
             {% endfor %}
         </div>
-        <p class="hint">Total a pagar: <strong>R$ {{ '%.2f'|format(cart.total) }}</strong></p>
+        {% if (quote.total - quote.subtotal)|abs > 0.005 %}
+        <p class="hint">Itens: R$ {{ '%.2f'|format(quote.subtotal) }} • Frete/ajustes: R$ {{ '%.2f'|format(quote.total - quote.subtotal) }}</p>
+        {% endif %}
+        <p class="hint">Total a pagar: <strong>R$ {{ '%.2f'|format(quote.total) }}</strong></p>
 
         <form class="checkout-form" method="post" action="{{ url_for('checkout') }}">
             <label>Nome do cliente

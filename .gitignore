@@ -2,4 +2,5 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
-backend/ecommerce.db
+backend/*.db
+legado/

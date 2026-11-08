@@ -1,17 +1,21 @@
 """COMPONENTES DE SOFTWARE reutilizáveis do framework de e-commerce.
 
 Um componente aqui é um módulo pequeno, com uma responsabilidade única e
-uma interface pública simples (funções documentadas). Ele NÃO conhece
-nenhum microsserviço específico, por isso pode ser reaproveitado por
-qualquer um deles (reuso).
+uma INTERFACE pública (classe abstrata "I...") implementada por uma classe
+concreta. Ele NÃO conhece nenhum microsserviço específico, por isso pode ser
+reaproveitado por qualquer um deles (reuso).
 
-Componentes disponíveis:
-    errors              -> exceções padronizadas (AppError, ValidationError, NotFoundError)
-    validation          -> validação de dados de entrada
-    sorting             -> ordenação (Bubble Sort)
-    search              -> busca linear e binária
-    pricing             -> cálculo de subtotais e totais
-    database            -> acesso ao banco SQLite (conexão e consultas)
-    http_client         -> chamadas HTTP entre microsserviços
-    service_app         -> fábrica de aplicação Flask padrão para um microsserviço
+Componente          Interface          Implementação(ões)
+------------------  -----------------  -----------------------------
+errors              -                  AppError, ValidationError, NotFoundError
+validation          IValidador         Validador
+sorting             ISorter            BubbleSorter
+search              ISearcher          LinearSearcher, BinarySearcher
+pricing             IPriceCalculator   PriceCalculator
+database            IDatabase          SQLiteDatabase
+http_client         IHttpClient        HttpClient
+service_app         IServiceFactory    ServiceAppFactory
+
+Cada módulo também oferece atalhos em forma de função (ex.: bubble_sort,
+query_all, http_client.get) para uso simples.
 """

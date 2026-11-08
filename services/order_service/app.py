@@ -4,6 +4,7 @@ Endpoints:
     GET  /health
     GET  /orders
     GET  /orders/<id>
+    GET  /orders/quote/<cart_id>   subtotal e total que seria cobrado
     POST /orders    corpo: {"cart_id": "...", "customer_name": "Ana", "payment_method": "pix"}
 """
 
@@ -27,6 +28,11 @@ def list_orders():
 @app.get("/orders/<int:order_id>")
 def get_order(order_id):
     return jsonify(service.get_order(order_id))
+
+
+@app.get("/orders/quote/<cart_id>")
+def quote(cart_id):
+    return jsonify(service.quote(cart_id))
 
 
 @app.post("/orders")
